@@ -19,7 +19,7 @@ Open `index.html` in a browser, or serve this folder with any static file server
 
 ## GitHub Pages
 
-The workflow in `.github/workflows/pages.yml` publishes the site from the repository root whenever changes are pushed to `main`. After the first workflow run, the site is available at:
+The `main` branch is configured as the publishing source, using the repository root. GitHub Pages republishes the site when source files are pushed to `main`. The site is available at:
 
 `https://mdshazeb9963-code.github.io/zebpomo/`
 
