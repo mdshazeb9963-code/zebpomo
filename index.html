@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#111126" />
+    <meta name="description" content="Turn a big goal into a calm, clear plan—one Pomodoro at a time." />
+    <title>zebpomo — Make time for what matters</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <header class="site-header wrap">
+      <a class="brand" href="#top" aria-label="zebpomo home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>zeb<span class="brand-light">pomo</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#planner">Planner</a>
+        <a href="#focus">Focus timer</a>
+      </nav>
+      <a class="header-cta" href="#planner">Make my plan <span aria-hidden="true">↗</span></a>
+      <button class="menu-toggle" aria-label="Open navigation" aria-expanded="false"><span></span><span></span></button>
+    </header>
+
+    <main id="top">
+      <section class="hero wrap">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> A little structure. A lot more focus.</div>
+          <h1>Make time for<br />what <span class="gradient-text">matters.</span></h1>
+          <p class="hero-intro">Big goal on your mind? Turn it into a plan you can actually follow—then take it one focused session at a time.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#planner">Plan my week <span aria-hidden="true">→</span></a>
+            <a class="text-link" href="#focus"><span class="play-small" aria-hidden="true">▶</span> Try the Pomodoro timer</a>
+          </div>
+          <div class="hero-proof"><div class="avatar-stack" aria-hidden="true"><i>✦</i><i>◌</i><i>✳</i></div><span>Less overwhelm, one session at a time</span></div>
+        </div>
+
+        <div class="hero-visual" aria-label="Preview of the zebpomo focus timer and weekly plan">
+          <div class="orb orb-pink" aria-hidden="true"></div>
+          <div class="orb orb-blue" aria-hidden="true"></div>
+          <div class="mini-card timer-preview glass">
+            <div class="mini-card-top"><span class="live-label"><i></i> FOCUS TIME</span><span class="more-dots">···</span></div>
+            <div class="preview-clock"><svg viewBox="0 0 140 140" aria-hidden="true"><circle class="clock-track" cx="70" cy="70" r="60"></circle><circle class="clock-progress" cx="70" cy="70" r="60"></circle></svg><div><strong>25:00</strong><small>deep work</small></div></div>
+            <div class="preview-controls"><span>◀</span><b>Start focus</b><span>↻</span></div>
+          </div>
+          <div class="mini-card plan-preview glass">
+            <div class="mini-card-top"><span class="card-heading">Your week, in focus</span><span class="week-chip">THIS WEEK</span></div>
+            <div class="preview-day"><span class="day-icon lilac">✎</span><div><b>Study for biology</b><small>2 focus sessions · Mon</small></div><span class="done-check">✓</span></div>
+            <div class="preview-day"><span class="day-icon mint">⌘</span><div><b>Draft project outline</b><small>3 focus sessions · Tue</small></div><span class="day-dot"></span></div>
+            <div class="preview-day"><span class="day-icon peach">◉</span><div><b>Review & make progress</b><small>2 focus sessions · Wed</small></div><span class="day-dot"></span></div>
+            <div class="preview-progress"><div><span>Weekly momentum</span><b>68%</b></div><span class="progress-track"><i></i></span></div>
+          </div>
+          <div class="floating-note glass"><span class="sparkle">✦</span><span>One thing at a time<br /><b>You’re doing great.</b></span></div>
+        </div>
+      </section>
+
+      <section class="trust-strip wrap" aria-label="Product highlights">
+        <div><strong>25 <small>min</small></strong><span>focus in small steps</span></div>
+        <div class="trust-divider"></div>
+        <div><strong>7 <small>days</small></strong><span>a plan that fits your week</span></div>
+        <div class="trust-divider"></div>
+        <div><strong>100<small>%</small></strong><span>your pace, your progress</span></div>
+      </section>
+
+      <section class="section planner-section" id="planner">
+        <div class="wrap">
+          <div class="section-heading centered">
+            <span class="eyebrow"><span class="eyebrow-dot"></span> YOUR GOAL, MADE DOABLE</span>
+            <h2>Tell us what’s on your plate.<br /><span class="gradient-text">We’ll map out the first steps.</span></h2>
+            <p>Pick a week or a month. zebpomo turns your challenge into a practical timetable with room to breathe.</p>
+          </div>
+          <div class="planner-layout">
+            <form class="planner-form glass" id="planner-form">
+              <div class="form-heading"><span class="step-number">01</span><div><h3>Start with your goal</h3><p>A rough idea is enough to begin.</p></div></div>
+              <label for="goal">What would you like to work on?</label>
+              <textarea id="goal" name="goal" rows="3" maxlength="180" placeholder="e.g. Prepare for my biology exam, launch my portfolio, learn the basics of Python…" required></textarea>
+              <div class="form-row form-row-period">
+                <fieldset class="period-field">
+                  <legend>Plan for</legend>
+                  <div class="segmented-control">
+                    <label><input type="radio" name="period" value="week" checked /><span>One week</span></label>
+                    <label><input type="radio" name="period" value="month" /><span>One month</span></label>
+                  </div>
+                </fieldset>
+                <label class="number-field" for="minutes-per-day"><span>Focus time / day</span><span class="input-with-unit"><input id="minutes-per-day" type="number" min="25" max="360" step="25" value="100" /><small>min</small></span></label>
+              </div>
+              <div class="form-row form-row-bottom">
+                <label class="select-field" for="days-per-week"><span>Days per week</span><select id="days-per-week"><option value="3">3 days</option><option value="4">4 days</option><option value="5" selected>5 days</option><option value="6">6 days</option><option value="7">Every day</option></select></label>
+                <label class="select-field" for="start-date"><span>Start date</span><input id="start-date" type="date" /></label>
+              </div>
+              <button class="button button-primary planner-submit" type="submit">Build my timetable <span aria-hidden="true">→</span></button>
+              <p class="privacy-note"><span aria-hidden="true">◈</span> Your plan stays on this device.</p>
+            </form>
+            <div class="planner-side">
+              <div class="tip-card glass"><span class="tip-icon">✦</span><div><b>Small steps add up.</b><p>We split your goal into steady focus sessions, spread across the days you choose.</p></div></div>
+              <div class="weekly-card glass">
+                <div class="mini-card-top"><div><span class="tiny-kicker">A SAMPLE DAY</span><h3>Find your rhythm</h3></div><span class="sun-icon">☼</span></div>
+                <div class="timeline">
+                  <div class="timeline-row"><time>09:00</time><span class="timeline-line lilac-line"></span><div><b>Pick one clear task</b><small>Make the next step obvious</small></div></div>
+                  <div class="timeline-row"><time>09:25</time><span class="timeline-line mint-line"></span><div><b>Take a short reset</b><small>Stretch, sip water, breathe</small></div></div>
+                  <div class="timeline-row"><time>09:30</time><span class="timeline-line peach-line"></span><div><b>Come back refreshed</b><small>Another small win in reach</small></div></div>
+                </div>
+                <div class="weekly-card-foot"><span>25 min focus</span><span class="foot-separator">·</span><span>5 min break</span><span class="foot-separator">·</span><span>repeat at your pace</span></div>
+              </div>
+              <div class="planner-side-note"><span>✳</span> Rest days are part of a good plan, too.</div>
+            </div>
+          </div>
+          <div class="plan-output" id="plan-output" hidden aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="section features-section" id="how-it-works">
+        <div class="wrap">
+          <div class="section-heading split-heading"><div><span class="eyebrow"><span class="eyebrow-dot"></span> A CALMER WAY TO GET THERE</span><h2>Progress feels better<br />when it has <span class="gradient-text">a plan.</span></h2></div><p>No complicated systems. Just a clear next step, a timer that helps you begin, and a schedule that respects your time.</p></div>
+          <div class="feature-grid">
+            <article class="feature-card glass"><div class="feature-visual goal-visual"><span class="visual-star">✦</span><div class="goal-pill">Your big goal</div><div class="connector"></div><div class="goal-step">A clear next step <span>✓</span></div><div class="goal-step second-step">Then one more <span>↗</span></div></div><div class="feature-copy"><span class="feature-num">01 / BREAK IT DOWN</span><h3>Make the big thing smaller</h3><p>Turn a challenge into a series of simple, doable actions. Start with the next one—not the whole mountain.</p></div></article>
+            <article class="feature-card glass"><div class="feature-visual rhythm-visual"><div class="rhythm-ring"><span>25<br /><small>MIN</small></span></div><div class="rhythm-orbit orbit-a">FOCUS</div><div class="rhythm-orbit orbit-b">RESET</div><div class="rhythm-spark">✳</div></div><div class="feature-copy"><span class="feature-num">02 / FIND YOUR RHYTHM</span><h3>Give your focus a home</h3><p>A friendly 25-minute timer helps you settle in. Short breaks keep your energy from running dry.</p></div></article>
+            <article class="feature-card glass"><div class="feature-visual calendar-visual"><div class="calendar-top"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span></div><div class="calendar-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="calendar-caption"><span>Focus</span><span>Rest</span></div></div><div class="feature-copy"><span class="feature-num">03 / MAKE IT YOURS</span><h3>Keep a little breathing room</h3><p>Choose how much time you have and which days work for you. A useful plan should fit real life.</p></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section focus-section" id="focus">
+        <div class="wrap focus-layout">
+          <div class="focus-copy"><span class="eyebrow"><span class="eyebrow-dot"></span> YOUR FOCUS CORNER</span><h2>Just you and<br /><span class="gradient-text">the next 25.</span></h2><p>Settle into one thing. When the timer ends, take a breath. You can pick what comes next.</p><div class="focus-benefits"><span><i>✓</i> No account needed</span><span><i>✓</i> Progress saves on your device</span></div></div>
+          <div class="timer-app glass" role="region" aria-label="Pomodoro timer">
+            <div class="timer-app-top"><span><i class="live-pulse"></i> READY WHEN YOU ARE</span><button class="icon-button" id="timer-reset" aria-label="Reset timer" title="Reset timer">↻</button></div>
+            <div class="timer-modes" role="group" aria-label="Timer mode"><button class="mode-button active" data-mode="focus" aria-pressed="true">Focus</button><button class="mode-button" data-mode="short" aria-pressed="false">Short break</button><button class="mode-button" data-mode="long" aria-pressed="false">Long break</button></div>
+            <div class="timer-face"><svg viewBox="0 0 250 250" aria-hidden="true"><circle class="timer-track" cx="125" cy="125" r="112"></circle><circle class="timer-progress-ring" id="timer-progress" cx="125" cy="125" r="112"></circle></svg><div class="timer-digits"><strong id="timer-display">25:00</strong><span id="timer-caption">ONE THING AT A TIME</span></div></div>
+            <div class="timer-controls"><button id="timer-start" class="button button-primary timer-start">Start focus <span aria-hidden="true">▶</span></button><button id="timer-skip" class="timer-skip" title="Skip to the next mode">Skip session <span aria-hidden="true">→</span></button></div>
+            <div class="timer-footer"><span><span class="tiny-clock">◷</span> Session <b id="session-count">0</b></span><span><span class="tiny-leaf">✳</span> Small steps still count</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="closing-section wrap"><div class="closing-card glass"><span class="closing-spark" aria-hidden="true">✦</span><div><span class="eyebrow">YOU DON’T HAVE TO DO IT ALL TODAY</span><h2>One small step<br />is a lovely place to start.</h2></div><a class="button button-primary" href="#planner">Make my plan <span aria-hidden="true">→</span></a></div></section>
+    </main>
+
+    <footer class="site-footer wrap" id="contact"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><span></span></span><span>zeb<span class="brand-light">pomo</span></span></a><p>Make room for what matters.</p><a class="footer-contact" href="https://github.com/mdshazeb9963-code/zebpomo/issues" target="_blank" rel="noreferrer">Questions or feedback? Get in touch <span aria-hidden="true">↗</span></a><span class="copyright">© <span id="year"></span> zebpomo</span></footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
