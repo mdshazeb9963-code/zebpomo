@@ -182,8 +182,8 @@ function renderPlan(plan, shouldScroll = false) {
   const periodText = plan.period === "month" ? "30-day plan" : "7-day plan";
   const totalHours = (plan.plannedMinutes / 60).toFixed(plan.plannedMinutes % 60 ? 1 : 0);
   planOutput.innerHTML = `<div class="generated-plan">
-    <div class="generated-plan-head"><div><span class="eyebrow"><span class="eyebrow-dot"></span> YOUR TIMETABLE IS READY</span><h3>${escapeHTML(plan.goal)}</h3><p>Use the checkboxes to mark a day complete. Your plan saves on this device.</p></div><div class="plan-actions"><button class="small-button" type="button" data-action="copy">Copy plan</button><button class="small-button" type="button" data-action="print">Print / save PDF</button></div></div>
-    <div class="plan-summary"><span>${periodText}</span><span>${plan.daysPerWeek} days / week</span><span>${plan.sessionsPerDay} focus ${plan.sessionsPerDay === 1 ? "session" : "sessions"} / workday</span><span>${totalHours} total focus hours</span></div>
+    <div class="generated-plan-head"><div><span class="eyebrow"><span class="eyebrow-dot"></span> YOUR TIMETABLE IS READY</span><h3>${escapeHTML(plan.goal)}</h3><span class="plan-engine${plan.planMode === "ai" ? " ai" : ""}">${plan.planMode === "ai" ? "✦ AI-PERSONALIZED PLAN" : "QUICK PLAN"}</span><p class="plan-summary-text">${escapeHTML(plan.aiSummary || "Use the checkboxes to mark a day complete. Your plan saves on this device.")}</p></div><div class="plan-actions"><button class="small-button" type="button" data-action="copy">Copy plan</button><button class="small-button" type="button" data-action="print">Print / save PDF</button></div></div>
+    <div class="plan-summary"><span>${periodText}</span><span>${plan.daysPerWeek} days / week</span><span>Up to ${plan.sessionsPerDay} focus ${plan.sessionsPerDay === 1 ? "session" : "sessions"} / workday</span><span>${totalHours} total focus hours</span></div>
     <div class="plan-weeks">${weeksHTML}</div>
     <p class="plan-note">This is a gentle starting framework based on the time you entered. Edit the steps to suit your challenge and leave room for real life.</p>
   </div>`;
@@ -212,7 +212,8 @@ function renderPlan(plan, shouldScroll = false) {
 function planAsText(plan) {
   const lines = [
     `zebpomo plan: ${plan.goal}`,
-    `${plan.period === "month" ? "30-day" : "7-day"} plan · ${plan.daysPerWeek} days/week · ${plan.sessionsPerDay} focus sessions per workday`,
+    `${plan.period === "month" ? "30-day" : "7-day"} plan · ${plan.daysPerWeek} days/week · up to ${plan.sessionsPerDay} focus sessions per workday`,
+    ...(plan.aiSummary ? [plan.aiSummary] : []),
     "",
   ];
   plan.days.forEach((day) => {
@@ -250,25 +251,119 @@ function getFormStartDate() {
   return new Date();
 }
 
+function readPlannerInput() {
+  return {
+    goal: $("#goal").value.trim(),
+    period: $("input[name='period']:checked").value,
+    minutesPerDay: Math.max(25, Math.min(360, Number.parseInt($("#minutes-per-day").value, 10) || 100)),
+    daysPerWeek: Number.parseInt($("#days-per-week").value, 10) || 5,
+    startDate: getFormStartDate(),
+  };
+}
+
+function saveAndRenderPlan(plan, message) {
+  try { localStorage.setItem(STORAGE.plan, JSON.stringify(plan)); } catch { /* The plan still works for this visit. */ }
+  renderPlan(plan, true);
+  announce(message);
+}
+
+function setAiStatus(message, kind = "") {
+  const status = $("#ai-status");
+  status.textContent = message;
+  status.classList.toggle("is-error", kind === "error");
+  status.classList.toggle("is-success", kind === "success");
+}
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  const goal = $("#goal").value.trim();
-  if (!goal) {
+  const input = readPlannerInput();
+  if (!input.goal) {
     $("#goal").focus();
     return;
   }
-  const period = $("input[name='period']:checked").value;
-  const minutesPerDay = Math.max(25, Math.min(360, Number.parseInt($("#minutes-per-day").value, 10) || 100));
-  const daysPerWeek = Number.parseInt($("#days-per-week").value, 10) || 5;
-  const plan = makePlan({ goal, period, minutesPerDay, daysPerWeek, startDate: getFormStartDate() });
-  try { localStorage.setItem(STORAGE.plan, JSON.stringify(plan)); } catch { /* The plan still works for this visit. */ }
-  renderPlan(plan, true);
-  announce("Your plan is ready. Start with one small step.");
+  saveAndRenderPlan(makePlan(input), "Your quick plan is ready. Start with one small step.");
 });
+
+async function generateAiPlan() {
+  if (!form.reportValidity()) return;
+  const input = readPlannerInput();
+  if (!input.goal) {
+    $("#goal").focus();
+    return;
+  }
+  const endpoint = String(window.ZEBPOMO_AI_ENDPOINT || "").trim();
+  if (!endpoint) {
+    setAiStatus("AI planning is not connected yet. Deploy the secure planner service and add its endpoint; the quick plan is ready in the meantime.", "error");
+    announce("AI planner setup is still needed. You can use the quick plan below.");
+    return;
+  }
+
+  const button = $("#generate-ai");
+  const originalLabel = button.innerHTML;
+  button.disabled = true;
+  button.innerHTML = "Planning your goal… <span aria-hidden=\"true\">✦</span>";
+  setAiStatus("Building a plan around your goal, available time, and selected days…");
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        goal: input.goal,
+        period: input.period,
+        minutesPerDay: input.minutesPerDay,
+        daysPerWeek: input.daysPerWeek,
+        startDate: localDateKey(input.startDate),
+      }),
+    });
+    let body;
+    try { body = await response.json(); } catch { body = {}; }
+    if (!response.ok) throw new Error(body.error || "The AI planner couldn’t create a plan right now.");
+    const ai = body.plan;
+    const plan = makePlan(input);
+    if (!ai || !Array.isArray(ai.days) || ai.days.length !== plan.duration) {
+      throw new Error("The AI planner returned an incomplete timetable. Please try again.");
+    }
+    const aiDays = new Map(ai.days.map((day) => [Number(day.dayNumber), day]));
+    if (plan.days.some((day) => !aiDays.has(day.dayNumber))) {
+      throw new Error("The AI planner returned a timetable with missing days. Please try again.");
+    }
+    plan.planMode = "ai";
+    plan.aiSummary = String(ai.summary || "A tailored plan built around your challenge and weekly rhythm.").trim().slice(0, 360);
+    plan.days = plan.days.map((day) => {
+      const generated = aiDays.get(day.dayNumber);
+      const action = String(generated.action || day.action).trim().slice(0, 260);
+      const phase = String(generated.milestone || day.phase).trim().slice(0, 80);
+      if (!day.isWorkday) return { ...day, phase, action, sessions: 0 };
+      const recommended = Number.parseInt(generated.focusSessions, 10);
+      return {
+        ...day,
+        phase,
+        action,
+        sessions: Math.max(1, Math.min(day.sessions, Number.isFinite(recommended) ? recommended : day.sessions)),
+      };
+    });
+    plan.plannedSessions = plan.days.reduce((total, day) => total + (day.isWorkday ? day.sessions : 0), 0);
+    plan.plannedMinutes = plan.plannedSessions * 25;
+    saveAndRenderPlan(plan, "Your AI-personalized plan is ready.");
+    setAiStatus("AI plan ready. Edit the steps as you learn what works for you.", "success");
+  } catch (error) {
+    setAiStatus(error.message || "Couldn’t reach the AI planner. Please try again or use the quick plan.", "error");
+    announce(error.message || "The AI planner could not be reached.");
+  } finally {
+    button.disabled = false;
+    button.innerHTML = originalLabel;
+  }
+}
 
 function initializePlanner() {
   const today = new Date();
   $("#start-date").value = localDateKey(today);
+  if (!String(window.ZEBPOMO_AI_ENDPOINT || "").trim()) {
+    setAiStatus("AI planner setup is still needed. Your quick plan works now; AI will be available after the secure service is connected.");
+  } else {
+    setAiStatus("AI planner connected. Your goal and schedule are sent to the planning service to create your plan.");
+  }
+  $("#generate-ai").addEventListener("click", generateAiPlan);
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE.plan) || "null");
     if (saved?.days?.length) renderPlan(saved);

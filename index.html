@@ -8,6 +8,7 @@
     <title>zebpomo — Make time for what matters</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="ai-config.js"></script>
     <script src="app.js" defer></script>
   </head>
   <body>
@@ -76,7 +77,7 @@
           </div>
           <div class="planner-layout">
             <form class="planner-form glass" id="planner-form">
-              <div class="form-heading"><span class="step-number">01</span><div><h3>Start with your goal</h3><p>A rough idea is enough to begin.</p></div></div>
+              <div class="form-heading"><span class="step-number">01</span><div><h3>Start with your goal</h3><p>A rough idea is enough to begin.</p></div><span class="ai-badge"><span>✦</span> AI PLAN MAKER</span></div>
               <label for="goal">What would you like to work on?</label>
               <textarea id="goal" name="goal" rows="3" maxlength="180" placeholder="e.g. Prepare for my biology exam, launch my portfolio, learn the basics of Python…" required></textarea>
               <div class="form-row form-row-period">
@@ -93,8 +94,9 @@
                 <label class="select-field" for="days-per-week"><span>Days per week</span><select id="days-per-week"><option value="3">3 days</option><option value="4">4 days</option><option value="5" selected>5 days</option><option value="6">6 days</option><option value="7">Every day</option></select></label>
                 <label class="select-field" for="start-date"><span>Start date</span><input id="start-date" type="date" /></label>
               </div>
-              <button class="button button-primary planner-submit" type="submit">Build my timetable <span aria-hidden="true">→</span></button>
-              <p class="privacy-note"><span aria-hidden="true">◈</span> Your plan stays on this device.</p>
+              <div class="planner-actions"><button class="button button-primary planner-submit" id="generate-ai" type="button">Generate my AI plan <span aria-hidden="true">✦</span></button><button class="quick-plan-button" type="submit">Make a quick plan without AI <span aria-hidden="true">→</span></button></div>
+              <p class="ai-status" id="ai-status" role="status" aria-live="polite">Personalized AI planning is being connected. Your quick plan is ready to use.</p>
+              <p class="privacy-note"><span aria-hidden="true">◈</span> Quick plans stay on this device. AI plans send your goal and schedule to the planning service.</p>
             </form>
             <div class="planner-side">
               <div class="tip-card glass"><span class="tip-icon">✦</span><div><b>Small steps add up.</b><p>We split your goal into steady focus sessions, spread across the days you choose.</p></div></div>
