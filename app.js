@@ -293,8 +293,8 @@ async function generateAiPlan() {
   }
   const endpoint = String(window.ZEBPOMO_AI_ENDPOINT || "").trim();
   if (!endpoint) {
-    setAiStatus("AI planning is not connected yet. Deploy the secure planner service and add its endpoint; the quick plan is ready in the meantime.", "error");
-    announce("AI planner setup is still needed. You can use the quick plan below.");
+    setAiStatus("AI plans aren’t active yet. Use the quick planner while the secure service is being connected.", "error");
+    announce("AI plans aren’t active yet. You can use the quick plan below.");
     return;
   }
 
@@ -359,7 +359,7 @@ function initializePlanner() {
   const today = new Date();
   $("#start-date").value = localDateKey(today);
   if (!String(window.ZEBPOMO_AI_ENDPOINT || "").trim()) {
-    setAiStatus("AI planner setup is still needed. Your quick plan works now; AI will be available after the secure service is connected.");
+    setAiStatus("AI plans aren’t active yet. The quick planner is ready to use meanwhile.");
   } else {
     setAiStatus("AI planner connected. Your goal and schedule are sent to the planning service to create your plan.");
   }

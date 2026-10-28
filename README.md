@@ -12,7 +12,7 @@ A calm Pomodoro timer and week/month challenge planner. The static app has no bu
 - Copy a plan or print it / save it as a PDF.
 - Responsive glassmorphism interface for desktop, tablet, and mobile.
 
-Quick plans use a local, rule-based framework and stay on the device. AI plans send the goal and schedule to the zebpomo Worker, which forwards the request to OpenAI's Responses API. The Worker does not store the goal or response; API requests set `store: false`. Treat generated steps as a flexible starting point and edit them for your challenge.
+Quick plans use a local, rule-based framework and stay on the device. AI plans send the goal and schedule to the zebpomo Node service, which forwards the request to OpenAI's Responses API. The service does not store the goal or response; API requests set `store: false`. Treat generated steps as a flexible starting point and edit them for your challenge.
 
 ## Run locally
 
@@ -28,12 +28,8 @@ The contact link opens the repository's GitHub Issues page.
 
 ## Connect the AI planner
 
-GitHub Pages serves static files, so the model call runs through the separate Cloudflare Worker in `worker/`. The API key belongs in a Worker secret, never in the website source.
+GitHub Pages serves the static frontend. The OpenAI call runs through the Node service in `server/`, deployed separately on Render. The API key belongs in a server environment variable, never in the website source.
 
-1. Create an OpenAI API key in your OpenAI Platform project.
-2. Install Node.js, open a terminal in `worker/`, and sign in to Cloudflare with `npx wrangler login`.
-3. Add the key as a Worker secret with `npx wrangler secret put OPENAI_API_KEY`.
-4. Deploy the endpoint with `npx wrangler deploy`.
-5. Copy the deployed Worker URL into `ai-config.js`, adding `/plan` at the end, then commit and push that file to `main`.
+The Render Blueprint is in `render.yaml`. It creates the `zebpomo-ai` web service and prompts for `OPENAI_API_KEY` as a secret. After deployment, copy the service URL into `ai-config.js`, adding `/plan` at the end, then commit and push that file to `main`.
 
-The Worker accepts requests from the GitHub Pages origin in `worker/wrangler.toml`, limits each IP to 8 plan requests per minute, validates the generated timetable, and returns a concise plan. Until the Worker is deployed and its URL is configured, the **Make a quick plan without AI** action remains available.
+The service accepts requests only from the GitHub Pages origin, limits each IP to 8 plan requests per minute, validates the generated timetable, and returns a concise plan. Until the service is deployed and its URL is configured, the **Make a quick plan without AI** action remains available.
